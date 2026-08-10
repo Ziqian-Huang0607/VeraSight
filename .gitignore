@@ -18,9 +18,17 @@ Temporary Items
 .apdisk
 *.icloud
 
-# Python environment
+# Environment
 .venv
 .env
+.agents
 
 # Project specific
-core
+express4d
+colab
+ml
+tests
+
+# Python
+__pycache__/
+*.pyc
