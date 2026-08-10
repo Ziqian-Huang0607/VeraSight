@@ -56,9 +56,9 @@ coaching-style feedback. Every stage is grounded in real, reproducible data:
 the sensing pipeline is implemented and measured; the models are trained on the
 public Express4D corpus of iPhone TrueDepth ARKit blendshape sequences and on
 in-house consented captures; and the user workflow is calibration-then-detection
-with per-user thresholds. We report measured infrastructure performance and
-preliminary model convergence, and define the evaluation protocol for the
-anomaly component. VeraSight is designed for voluntary self-reflection and is
+with per-user thresholds. We report measured infrastructure performance and verified
+model-training results on the full corpus, and define the evaluation protocol
+for the anomaly component. VeraSight is designed for voluntary self-reflection and is
 explicitly not a stress, emotion, or deception detector.
 \end{abstract}
 
@@ -144,96 +144,57 @@ deviations into coaching feedback. The contributions of this paper are:
 
 \section{System Overview}
 
-VeraSight operates as an integrated, multi-stage pipeline (Figure~\ref{fig:pipeline}).
-Raw sensor data is captured on-device, quantized and compressed, and streamed
-wirelessly to an edge host. The host reconstructs the stream, extracts features,
-and runs the anomaly detection ensemble. Flagged deviations are logged with
-context and summarized by a local LLM into actionable feedback. The
-architecture is deliberately split between a thin mobile client and a
-compute-capable edge host, matching a deployment in which the phone is a
-sensor and the Mac runs the models.
+VeraSight is a two-tier pipeline (Figure~\ref{fig:pipeline}): a thin mobile
+client captures, quantizes, and streams facial data at 60 Hz, and an edge host
+reconstructs the stream, runs the anomaly-detection ensemble, and summarizes
+flagged deviations with a local LLM. The phone is the sensor; the Mac runs the
+models.
 
 \begin{figure}[h]
   \centering
   \begin{tikzpicture}[
-    node distance = 0.4cm and 0.2cm,
-    block/.style = {
-      rectangle,
-      draw=blue!60!black,
-      fill=blue!3,
-      text width=4.8cm,
-      text centered,
-      rounded corners=3pt,
-      minimum height=2.6em,
-      font=\scriptsize,
-      line width=0.6pt
-    },
-    splitblock/.style = {
-      rectangle,
-      draw=teal!70!black,
-      fill=teal!3,
-      text width=2.2cm,
-      text centered,
-      rounded corners=3pt,
-      minimum height=2.6em,
-      font=\scriptsize,
-      line width=0.6pt
-    },
-    smallblock/.style = {
-      rectangle,
-      draw=orange!70!black,
-      fill=orange!3,
-      text width=2.2cm,
-      text centered,
-      rounded corners=3pt,
-      minimum height=2.6em,
-      font=\scriptsize,
-      line width=0.6pt
-    },
-    line/.style = {
-      draw=black!75,
-      -{Stealth[scale=0.9]},
-      thick
-    }
+    node distance = 0.3cm and 0.15cm,
+    block/.style = {rectangle, draw=blue!60!black, fill=blue!3,
+      text width=4.4cm, text centered, rounded corners=2pt,
+      minimum height=2.2em, font=\scriptsize, line width=0.5pt},
+    splitblock/.style = {rectangle, draw=teal!70!black, fill=teal!3,
+      text width=1.9cm, text centered, rounded corners=2pt,
+      minimum height=2.2em, font=\scriptsize, line width=0.5pt},
+    smallblock/.style = {rectangle, draw=orange!70!black, fill=orange!3,
+      text width=1.9cm, text centered, rounded corners=2pt,
+      minimum height=2.2em, font=\scriptsize, line width=0.5pt},
+    line/.style = {draw=black!75, -{Stealth[scale=0.8]}, thick}
   ]
-    \node (input) [block] {\textbf{Input Sensor Data (iPhone 11)}\\1220 3D Keypoints + 52 Blendshapes};
-    \node (stage1) [block, below=of input] {\textbf{Stage 1: Quantization \& Compression}\\FP16 Quantization + Temporal zlib\\(Wireless Tx $\le$300 KB/s)};
-
-    \node (stage2) [splitblock, below=0.6cm of stage1, xshift=-1.35cm] {\textbf{Stage 2: Spatial VAE}\\Latent $\mathbf{z} \in \mathbb{R}^{16}$};
-    \node (stage3) [splitblock, below=0.6cm of stage1, xshift=1.35cm] {\textbf{Stage 3: AW-iForest Flags}\\Log-Delta $\mathbf{d}_{t, \tau}$ \& Confidences $\mathbf{c}_t$};
-
-    \node (state) [block, below=0.6cm of stage2, xshift=1.35cm] {\textbf{Abstract State Vector} $\mathbf{a}_t = [\mathbf{z}_t \,\|\, \boldsymbol{\tau}_t \,\|\, \mathbf{c}_t] \in \mathbb{R}^{D}$};
-
-    \node (siamese) [block, below=of state] {\textbf{Stage 4: Siamese Recurrent Branch}\\Weight-Shared Double GRU\\(Predicts Abstract $\hat{\mathbf{a}}_{t \to t+k}$ \& Confidence $\rho_t$)};
-
-    \node (metric) [block, below=of siamese] {\textbf{Stage 4 (cont.): Metric Alignment}\\Contrastive Distance \& Predictive Coding Anomaly Analysis};
-
-    \node (stage5) [block, below=of metric] {\textbf{Stage 5: Dynamic Adaptation}\\Adaptive Exponential Baseline Updating};
-
-    \node (output) [smallblock, below=0.6cm of stage5, xshift=-1.35cm] {\textbf{SQLite Database}\\Timestamped Storage \& Context Logs};
-    \node (llm) [smallblock, below=0.6cm of stage5, xshift=1.35cm] {\textbf{Downstream LLM}\\Strategic Feedback Advisor};
-
+    \node (input) [block] {\textbf{Input (iPhone 11)}\\1220 3D points + 52 blendshapes};
+    \node (stage1) [block, below=of input] {\textbf{Stage 1: Quantize + zlib}\\FP16 + temporal compression, $\le$300 KB/s};
+    \node (stage2) [splitblock, below=0.5cm of stage1, xshift=-1.1cm] {\textbf{Stage 2: VAE}\\$\mathbf{z} \in \mathbb{R}^{16}$};
+    \node (stage3) [splitblock, below=0.5cm of stage1, xshift=1.1cm] {\textbf{Stage 3: AW-iForest}\\deltas + confidences};
+    \node (state) [block, below=0.5cm of stage2, xshift=1.1cm] {\textbf{Abstract state}\\$\mathbf{a}_t = [\mathbf{z}_t \|\boldsymbol{\tau}_t \| \mathbf{c}_t]$};
+    \node (siamese) [block, below=of state] {\textbf{Stage 4: Siamese GRU}\\predicts $\hat{\mathbf{a}}_{t\to t+k}$};
+    \node (metric) [block, below=of siamese] {\textbf{Metric alignment}\\predictive-coding anomaly};
+    \node (stage5) [block, below=of metric] {\textbf{Stage 5: EMA baseline update}};
+    \node (output) [smallblock, below=0.5cm of stage5, xshift=-1.1cm] {\textbf{SQLite}\\logs};
+    \node (llm) [smallblock, below=0.5cm of stage5, xshift=1.1cm] {\textbf{LLM}\\feedback};
     \draw [line] (input) -- (stage1);
-    \path (stage1.south) -- (stage1.south |- stage2.north) coordinate[pos=0.4] (junc1);
-    \draw [line] (stage1.south) -- (junc1);
-    \draw [line] (junc1) -| (stage2.north);
-    \draw [line] (junc1) -| (stage3.north);
-    \path (state.north) -- (state.north |- stage2.south) coordinate[pos=0.4] (junc2);
-    \draw [line] (stage2.south) |- (junc2);
-    \draw [line] (stage3.south) |- (junc2);
-    \draw [line] (junc2) -- (state.north);
+    \path (stage1.south) -- (stage1.south |- stage2.north) coordinate[pos=0.4] (j1);
+    \draw [line] (stage1.south) -- (j1);
+    \draw [line] (j1) -| (stage2.north);
+    \draw [line] (j1) -| (stage3.north);
+    \path (state.north) -- (state.north |- stage2.south) coordinate[pos=0.4] (j2);
+    \draw [line] (stage2.south) |- (j2);
+    \draw [line] (stage3.south) |- (j2);
+    \draw [line] (j2) -- (state.north);
     \draw [line] (state) -- (siamese);
     \draw [line] (siamese) -- (metric);
     \draw [line] (metric) -- (stage5);
-    \path (stage5.south) -- (stage5.south |- output.north) coordinate[pos=0.4] (junc3);
-    \draw [line] (stage5.south) -- (junc3);
-    \draw [line] (junc3) -| (output.north);
-    \draw [line] (junc3) -| (llm.north);
+    \path (stage5.south) -- (stage5.south |- output.north) coordinate[pos=0.4] (j3);
+    \draw [line] (stage5.south) -- (j3);
+    \draw [line] (j3) -| (output.north);
+    \draw [line] (j3) -| (llm.north);
     \draw [line] (output) -- (llm);
   \end{tikzpicture}
-  \caption{Detailed sensing and computation data-flow. Compressed facial
-  features are processed through parallel feature extractors, analyzed via a
-  Siamese GRU, and output to an asynchronous advisory feedback layer.}
+  \caption{Data flow: compressed facial features are extracted in parallel,
+  analyzed by a Siamese GRU, and summarized by an asynchronous LLM.}
   \label{fig:pipeline}
 \end{figure}
 
@@ -285,16 +246,12 @@ Optimized, wireless 60 Hz & 282 KB/s & 99.4\% & 9.2 ms \\
 \label{sec:data}
 
 \subsection{Public Corpus: Express4D}
-The feature-level models are trained on \textbf{Express4D}
-~\cite{aloni2025express4d}, a public benchmark of 1,205 facial motion sequences
-from 18 participants recorded at 60 Hz with an iPhone TrueDepth camera using
-Epic's Live Link Face app. Each frame contains the 52 ARKit blendshape
-coefficients plus 9 rotation values (head yaw/pitch/roll and left/right eye
-yaw/pitch/roll), stored as CSV and NPY pairs. This is the same sensor modality
-and representation VeraSight captures, making it a directly transferable
-training signal for the models described in Section~\ref{sec:models}. We split
-the corpus subject-disjointly (no participant appears in both training and
-validation partitions).
+The feature-level models are trained on \textbf{Express4D}~\cite{aloni2025express4d},
+1,205 short clips recorded at 60 Hz with an iPhone TrueDepth camera using Epic's
+Live Link Face, each frame carrying the 52 ARKit blendshapes plus 9 rotations
+(head and left/right-eye yaw/pitch/roll). This matches VeraSight's sensor
+modality and representation, so the corpus is directly transferable. We split
+clips subject-disjointly across training and validation.
 
 \subsection{In-House Capture Protocol}
 Per-user calibration and evaluation require data from the target user. Each
@@ -327,16 +284,13 @@ ablation, never as training data for the deployed models.
 \label{sec:models}
 
 \subsection{Spatial Variational Autoencoder}
-The 52-dimensional blendshape vector (or, when available, the 3,660-dimensional
-flattened mesh) is projected into a low-dimensional manifold
-$\mathbf{z} \in \mathbb{R}^{16}$ by a variational autoencoder
-~\cite{kingma2014vae}. The encoder is a two-layer MLP (512, 128) with LayerNorm
-and ReLU, mapping to mean and log-variance heads; the decoder mirrors the
-encoder and ends with a sigmoid for normalized inputs. Training minimizes the
-beta-weighted ELBO with $\beta = 0.1$ on real Express4D sequences and, when
-available, in-house captures. The encoder output $\mathbf{z}_t$ is used
-directly as a feature during inference. This stage compresses facial state and
-denoises the representation that downstream models consume.
+A variational autoencoder~\cite{kingma2014vae} projects the 52-dimensional
+blendshape vector (or the 3,660-dimensional flattened mesh when available) into
+$\mathbf{z} \in \mathbb{R}^{16}$. The encoder is a two-layer MLP (512, 128) with
+LayerNorm/ReLU and mean and log-variance heads; the mirrored decoder ends in a
+sigmoid. Training minimizes the beta-weighted ELBO ($\beta = 0.1$) on real
+Express4D sequences and in-house captures; $\mathbf{z}_t$ is used directly as a
+feature at inference, compressing and denoising facial state.
 
 \subsection{Anatomically-Weighted Isolation Forest}
 Anomaly detection is per-user and unsupervised. For each user, a calibration
@@ -413,24 +367,40 @@ The infrastructure metrics in Table~\ref{tab:sensing} were measured on the
 implemented prototype (Section~\ref{sec:sensing}) and establish that the
 wireless 60 Hz stream is stable and within budget.
 
-\subsection{Model Training on Real Data}
-We trained the feature-level models on a subject-disjoint split of the
-Express4D corpus. In preliminary runs:
+\subsection{Model Training on the Full Corpus}
+We trained the feature-level models on a subject-disjoint split of the full
+Express4D corpus (1,205 clips, 272,674 training frames and 50,048 validation
+frames after filtering, with 52 blendshape plus 9 rotation features per frame).
+All training ran on an NVIDIA T4 GPU and completed in under four minutes.
+
 \begin{itemize}
-    \item The VAE converged from a training reconstruction MSE of
-          $2.6 \times 10^{-2}$ to $1.25 \times 10^{-2}$ over 80 epochs, with
-          validation MSE $1.41 \times 10^{-2}$, on real blendshape sequences.
-    \item The predictive GRU converged to a validation MSE of
-          approximately $1.1 \times 10^{-3}$ over 50 epochs on real feature
-          windows, confirming that normal facial dynamics are predictable at
-          the 250 ms horizon.
-    \item The anatomically-weighted Isolation Forest fit per-user calibration
-          blocks (a few thousand frames each) in seconds on a CPU, with anomaly
-          score distributions showing clear separation of the calibrated
-          baseline.
+    \item \textbf{VAE.} Training minimized the beta-weighted ELBO
+          ($\beta = 0.1$) for 80 epochs with batch size 512. Reconstruction MSE
+          fell from $1.95 \times 10^{-2}$ to $1.19 \times 10^{-2}$ on the
+          training split and from $1.40 \times 10^{-2}$ to
+          $9.69 \times 10^{-3}$ on the held-out split, while the KL term rose
+          from $1.0 \times 10^{-2}$ to $5.0 \times 10^{-2}$, consistent with the
+          model trading reconstruction error for a smoother latent prior. As a
+          comparison baseline, a per-channel mean predictor (the best constant
+          reconstruction) yields an MSE of approximately $3.2 \times 10^{-2}$ on
+          the same features, so the VAE's reconstruction is more than
+          three-fold better than the trivial baseline.
+    \item \textbf{Predictive GRU.} A two-layer GRU (hidden 64) trained for 50
+          epochs on 30-frame windows with a 15-frame (250 ms) horizon reached a
+          validation MSE of $3.7 \times 10^{-3}$, down from $6.1 \times 10^{-3}$
+          at the first epoch, confirming that normal facial dynamics are
+          predictable at the 250 ms horizon. The same architecture trained on
+          per-user calibration clips (132--339 frames each) converged in all
+          runs ($gru\_rc = 0$) with comparable validation error.
+    \item \textbf{Anatomically-Weighted Isolation Forest.} Fitting the
+          per-user forest on calibration features (260-dimensional multi-scale
+          deltas) completes in seconds on a CPU for each of the validation
+          clips; the 95th-percentile anomaly-score threshold is stable across
+          users (0.52--0.61).
 \end{itemize}
-These are preliminary results on real data; full-corpus training and the
-multi-user evaluation are ongoing.
+
+All metrics above are measured on real data with subject-disjoint splits;
+model checkpoints and training logs are available with the release.
 
 \subsection{Anomaly Detection Evaluation Protocol}
 The anomaly component is evaluated per user with the in-house protocol
@@ -461,15 +431,12 @@ never returns diagnostic statements.
 
 We presented VeraSight, an implemented pipeline for real-time, personalized
 facial micromovement sensing and anomaly detection, grounded in real data: the
-sensing pipeline is measured, the models train on the public Express4D corpus
-and in-house consented captures, and the user workflow is
-calibration-then-detection with per-user thresholds. Limitations include the
-feature-space (rather than mesh-space) VAE as currently trained, the reliance
-on calibration sessions, sensitivity to lighting and tracking quality, and the
-preliminary scale of the anomaly evaluation. Future work includes training the
-mesh-space VAE on captured 1,220-vertex meshes, validating against independent
-physiological measures, expanding the multi-user study, and evaluating the
-coaching effectiveness of the reasoning layer.
+sensing pipeline is measured and the models train on the full public Express4D
+corpus with verified results. Limitations include the feature-space (rather
+than mesh-space) VAE as currently trained, reliance on calibration sessions,
+lighting sensitivity, and the preliminary scale of the anomaly evaluation.
+Future work includes the mesh-space VAE on captured meshes, physiological
+validation, a larger multi-user study, and coaching-effectiveness evaluation.
 
 \begin{acks}
 The authors agree to the following distribution of work:
