@@ -1,0 +1,145 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{12}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Aloni et~al\mbox{.}(2025)]%
+        {aloni2025express4d}
+\bibfield{author}{\bibinfo{person}{Yaron Aloni}, \bibinfo{person}{Rotem Shalev-Arkushin}, \bibinfo{person}{Yonatan Shafir}, \bibinfo{person}{Guy Tevet}, \bibinfo{person}{Ohad Fried}, {and} \bibinfo{person}{Amit~Haim Bermano}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{Express4D: Expressive, Friendly, and Extensible 4D Facial Motion Generation Benchmark}.
+\newblock
+\showeprint[arxiv]{2508.12438}~[cs.GR]
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2508.12438}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Apple Inc.}(2026)]%
+        {apple2026arkit}
+\bibfield{author}{\bibinfo{person}{{Apple Inc.}}} \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{{ARKit}: Face Tracking and {ARFaceGeometry}}.
+\newblock \bibinfo{howpublished}{\url{https://developer.apple.com/documentation/arkit/}}.
+\newblock
+
+
+\bibitem[Cho et~al\mbox{.}(2014)]%
+        {cho2014gru}
+\bibfield{author}{\bibinfo{person}{Kyunghyun Cho}, \bibinfo{person}{Bart van Merrienboer}, \bibinfo{person}{Caglar Gulcehre}, \bibinfo{person}{Dzmitry Bahdanau}, \bibinfo{person}{Fethi Bougares}, \bibinfo{person}{Holger Schwenk}, {and} \bibinfo{person}{Yoshua Bengio}.} \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{Learning Phrase Representations using RNN Encoder--Decoder for Statistical Machine Translation}. In \bibinfo{booktitle}{\emph{Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)}}. \bibinfo{pages}{1724--1734}.
+\newblock
+\href{https://doi.org/10.3115/v1/D14-1179}{doi:\nolinkurl{10.3115/v1/D14-1179}}
+
+
+\bibitem[Gerganov(2023)]%
+        {gerganov2023llamacpp}
+\bibfield{author}{\bibinfo{person}{Georgi Gerganov}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{llama.cpp}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/ggerganov/llama.cpp}}.
+\newblock
+
+
+\bibitem[Kartynnik et~al\mbox{.}(2019)]%
+        {kartynnik2019facemesh}
+\bibfield{author}{\bibinfo{person}{Yury Kartynnik}, \bibinfo{person}{Artsiom Ablavatski}, \bibinfo{person}{Ivan Grishchenko}, {and} \bibinfo{person}{Matthias Grundmann}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Real-time Facial Surface Geometry from Monocular Video on Mobile GPUs}. In \bibinfo{booktitle}{\emph{Proceedings of the CVPR Workshop on Computer Vision for Augmented and Virtual Reality}}.
+\newblock
+\showeprint[arxiv]{1907.06724}
+
+
+\bibitem[Kingma and Welling(2014)]%
+        {kingma2014vae}
+\bibfield{author}{\bibinfo{person}{Diederik~P Kingma} {and} \bibinfo{person}{Max Welling}.} \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{Auto-Encoding Variational Bayes}. In \bibinfo{booktitle}{\emph{Proceedings of the 2nd International Conference on Learning Representations (ICLR)}}.
+\newblock
+
+
+\bibitem[Liu et~al\mbox{.}(2008)]%
+        {liu2008isolation}
+\bibfield{author}{\bibinfo{person}{Fei~Tony Liu}, \bibinfo{person}{Kai~Ming Ting}, {and} \bibinfo{person}{Zhi-Hua Zhou}.} \bibinfo{year}{2008}\natexlab{}.
+\newblock \showarticletitle{Isolation Forest}. In \bibinfo{booktitle}{\emph{Proceedings of the 8th IEEE International Conference on Data Mining (ICDM)}}. \bibinfo{pages}{413--422}.
+\newblock
+\href{https://doi.org/10.1109/ICDM.2008.17}{doi:\nolinkurl{10.1109/ICDM.2008.17}}
+
+
+\bibitem[Matsumoto and Hwang(2018)]%
+        {matsumoto2018microexpressions}
+\bibfield{author}{\bibinfo{person}{David Matsumoto} {and} \bibinfo{person}{Hyisung~C. Hwang}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Microexpressions Differentiate Truths From Lies About Future Malicious Intent}.
+\newblock \bibinfo{journal}{\emph{Frontiers in Psychology}}  \bibinfo{volume}{9} (\bibinfo{year}{2018}), \bibinfo{pages}{2545}.
+\newblock
+\href{https://doi.org/10.3389/fpsyg.2018.02545}{doi:\nolinkurl{10.3389/fpsyg.2018.02545}}
+
+
+\bibitem[Porter and ten Brinke(2008)]%
+        {porter2008reading}
+\bibfield{author}{\bibinfo{person}{Stephen Porter} {and} \bibinfo{person}{Leanne ten Brinke}.} \bibinfo{year}{2008}\natexlab{}.
+\newblock \showarticletitle{Reading between the lies: Identifying concealed and falsified emotions in universal facial expressions}.
+\newblock \bibinfo{journal}{\emph{Psychological Science}} \bibinfo{volume}{19}, \bibinfo{number}{5} (\bibinfo{year}{2008}), \bibinfo{pages}{508--514}.
+\newblock
+\href{https://doi.org/10.1111/j.1467-9280.2008.02116.x}{doi:\nolinkurl{10.1111/j.1467-9280.2008.02116.x}}
+
+
+\bibitem[Porter et~al\mbox{.}(2012)]%
+        {porter2012secrets}
+\bibfield{author}{\bibinfo{person}{Stephen Porter}, \bibinfo{person}{Leanne {ten Brinke}}, {and} \bibinfo{person}{Brendan Wallace}.} \bibinfo{year}{2012}\natexlab{}.
+\newblock \showarticletitle{Secrets and lies: Involuntary leakage in deceptive facial expressions as a function of emotional intensity}.
+\newblock \bibinfo{journal}{\emph{Journal of Nonverbal Behavior}} \bibinfo{volume}{36}, \bibinfo{number}{1} (\bibinfo{year}{2012}), \bibinfo{pages}{23--37}.
+\newblock
+\href{https://doi.org/10.1007/s10919-011-0120-7}{doi:\nolinkurl{10.1007/s10919-011-0120-7}}
+
+
+\bibitem[{Qwen Team}(2026)]%
+        {qwen2026}
+\bibfield{author}{\bibinfo{person}{{Qwen Team}}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{{Qwen3.6-27B}: Flagship-Level Coding in a 27B Dense Model}.
+\newblock
+\urldef\tempurl%
+\url{https://qwen.ai/blog?id=qwen3.6-27b}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Vitale(2021)]%
+        {vitale2021facial}
+\bibfield{author}{\bibinfo{person}{Igor~Vaslav Vitale}.} \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{Facial Action Coding System Applied to Criminal Investigations: The Analysis of a Homicide Case in Southern Italy}.
+\newblock \bibinfo{journal}{\emph{International Annals of Criminology}} \bibinfo{volume}{59}, \bibinfo{number}{1} (\bibinfo{year}{2021}), \bibinfo{pages}{11--22}.
+\newblock
+\href{https://doi.org/10.1017/cri.2021.7}{doi:\nolinkurl{10.1017/cri.2021.7}}
+
+
+\end{thebibliography}
