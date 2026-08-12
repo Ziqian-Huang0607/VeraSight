@@ -4,6 +4,7 @@
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{balance}
 
 \AtBeginDocument{%
   \providecommand\BibTeX{{%
@@ -38,7 +39,9 @@
 }
 \email{ziqian.huang@hotmail.com}
 
-\renewcommand{\shortauthors}{Chen and Huang}
+\renewcommand{\shortauthors}{William Quhao Chen and Ziqian Huang}
+%% No italics, no superscripts, not anonymous
+%% Use footnote or author note to identify equal contribution, shared contribution, and/or contact author info
 
 \begin{abstract}
 This paper presents VeraSight, a real-time, personalized pipeline that senses
@@ -450,6 +453,7 @@ system, and assisted with some preliminary research for ML.
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
+\balance
 \bibliography{references}
 
 \end{document}
